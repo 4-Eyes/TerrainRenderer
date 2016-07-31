@@ -14,4 +14,24 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Terrain.vert" />
+    <None Include="TerrainTCS.glsl" />
+    <None Include="TerrainTES.glsl" />
+    <None Include="Terrain.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="HeightMap.tga" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="loadTGA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
 </Project>
