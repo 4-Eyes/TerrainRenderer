@@ -149,6 +149,7 @@
     <None Include="TerrainTES.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Brick.tga" />
     <Image Include="HeightMap.tga" />
   </ItemGroup>
   <ItemGroup>

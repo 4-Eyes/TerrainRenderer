@@ -13,8 +13,9 @@ void main() {
 	          +    u  *    v  * gl_in[2].gl_Position
 	          + (1-u) *    v  * gl_in[3].gl_Position;
 
-	//vec4 heightVec = texture(heightSampler, vec2(0,0));
-
+	//vec4 heightVec = vec4(255.0, 255.0, 255.0, 255.0);
+	vec4 h = texture(heightSampler, vec2(posn.x/512.0,posn.z/512.0));
+	posn.y = (posn.x / 512.0 + posn.z / 512.0) * 10;
 	//float value = ((abs(heightVec.x) + abs(heightVec.y) + abs(heightVec.z)) / 2726894656) * 10;
 
 	//posn.y = value;

@@ -9,6 +9,10 @@
 #include "loadTGA.h"
 using namespace std;
 
+extern "C" {
+	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+}
+
 GLuint matrixLoc;
 GLuint vaoID, heightTexID;
 glm::mat4 projView;
@@ -54,7 +58,7 @@ void loadTextures()
 	// Load height map
 	glActiveTexture(GL_TEXTURE0);  //Texture unit 0
 	glBindTexture(GL_TEXTURE_2D, heightTexID);
-	loadTGA("HeightMap.tga");
+	loadTGA("Brick.tga");
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
