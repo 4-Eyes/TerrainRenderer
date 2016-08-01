@@ -5,6 +5,7 @@
 #include <GL/freeglut.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <cstdlib>
 #include "loadTGA.h"
 using namespace std;
 
@@ -13,18 +14,21 @@ GLuint vaoID, heightTexID;
 glm::mat4 projView;
 const int gridSize = 512; // makes it a gridSize x gridSize grid
 float verts[gridSize * gridSize * 3];
-GLushort elems[(gridSize - 1) * (gridSize - 1) * 4];
+GLushort elems[gridSize * gridSize * 4];
 float CDR = 3.14159265 / 180.0;
 
 GLuint loadShader(GLenum shaderType, string filename)
 {
-	ifstream shaderFile(filename.c_str());
-	if (!shaderFile.good()) cout << "Error opening shader file." << endl;
-	stringstream shaderData;
-	shaderData << shaderFile.rdbuf();
-	shaderFile.close();
-	string shaderStr = shaderData.str();
-	const char* shaderTxt = shaderStr.c_str();
+	ifstream foo(filename.c_str());
+	string data = "";
+	while (!foo.eof())
+	{
+		string tmp;
+		getline(foo, tmp);
+		data += tmp + "\r\n";
+	}
+	foo.close();
+	const char * shaderTxt = data.c_str();
 
 	GLuint shader = glCreateShader(shaderType);
 	glShaderSource(shader, 1, &shaderTxt, NULL);
@@ -58,8 +62,8 @@ void loadTextures()
 
 void generateGrid()
 {
-	float min = -1000.0;
-	float max = 1000.0;
+	float min = -512;
+	float max = 512.0;
 	float incr = (max - min) / gridSize;
 	for (int i = 0; i < gridSize; i++)
 	{
@@ -79,7 +83,7 @@ void generateGrid()
 	}
 }
 
-inline void populateGrid()
+void populateGrid()
 {
 	for (auto i = 0; i < 512; i++)
 	{
@@ -111,14 +115,14 @@ void initialise()
 	// set up shaders
 	GLuint vertexShader = loadShader(GL_VERTEX_SHADER, "Terrain.vert");
 	GLuint fragShader = loadShader(GL_FRAGMENT_SHADER, "Terrain.frag");
-	GLuint tessEvalShader = loadShader(GL_TESS_EVALUATION_SHADER, "TerrainTES.glsl");
-	GLuint tessContShader = loadShader(GL_TESS_CONTROL_SHADER, "TerrainTCS.glsl");
+//	GLuint tessEvalShader = loadShader(GL_TESS_EVALUATION_SHADER, "TerrainTES.glsl");
+//	GLuint tessContShader = loadShader(GL_TESS_CONTROL_SHADER, "TerrainTCS.glsl");
 
 	GLuint program = glCreateProgram();
 	glAttachShader(program, vertexShader);
 	glAttachShader(program, fragShader);
-	glAttachShader(program, tessEvalShader);
-	glAttachShader(program, tessContShader);
+//	glAttachShader(program, tessEvalShader);
+//	glAttachShader(program, tessContShader);
 	glLinkProgram(program);
 
 	// Make sure the shaders have been linked correctly
@@ -139,7 +143,7 @@ void initialise()
 	glUniform1i(texLoc, 0);
 
 	proj = glm::perspective(20.0f * CDR, 1.0f, 10.0f, 1000.0f);
-	view = glm::lookAt(glm::vec3(0.0, 5.0, 12.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	view = lookAt(glm::vec3(0.0, 5.0, 12.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 
