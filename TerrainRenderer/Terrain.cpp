@@ -62,8 +62,8 @@ void loadTextures()
 
 void generateGrid()
 {
-	float min = -512;
-	float max = 512.0;
+	float min = 0;
+	float max = 512;
 	float incr = (max - min) / gridSize;
 	for (int i = 0; i < gridSize; i++)
 	{
@@ -83,46 +83,21 @@ void generateGrid()
 	}
 }
 
-void populateGrid()
-{
-	for (auto i = 0; i < 512; i++)
-	{
-		for (auto j = 0; j < 512; j++)
-		{
-			auto apos = i * 512 + j, ppos = apos * 3;
-			verts[ppos] = i;
-			verts[ppos + 1] = 0.0f;
-			verts[ppos + 2] = -j;
-
-			if (i != 511 && j != 511)
-			{
-				auto epos = apos * 4, npos = apos + 512;
-				elems[epos] = apos;
-				elems[epos + 1] = npos;
-				elems[epos + 2] = npos + 1;
-				elems[epos + 3] = apos + 1;
-			}
-		}
-	}
-}
-
 void initialise()
 {
-//	generateGrid();
-	populateGrid();
-	loadTextures();
+	generateGrid();
 	glm::mat4 proj, view;
 	// set up shaders
 	GLuint vertexShader = loadShader(GL_VERTEX_SHADER, "Terrain.vert");
 	GLuint fragShader = loadShader(GL_FRAGMENT_SHADER, "Terrain.frag");
-//	GLuint tessEvalShader = loadShader(GL_TESS_EVALUATION_SHADER, "TerrainTES.glsl");
-//	GLuint tessContShader = loadShader(GL_TESS_CONTROL_SHADER, "TerrainTCS.glsl");
+	GLuint tessEvalShader = loadShader(GL_TESS_EVALUATION_SHADER, "TerrainTES.glsl");
+	GLuint tessContShader = loadShader(GL_TESS_CONTROL_SHADER, "TerrainTCS.glsl");
 
 	GLuint program = glCreateProgram();
 	glAttachShader(program, vertexShader);
 	glAttachShader(program, fragShader);
-//	glAttachShader(program, tessEvalShader);
-//	glAttachShader(program, tessContShader);
+	glAttachShader(program, tessEvalShader);
+	glAttachShader(program, tessContShader);
 	glLinkProgram(program);
 
 	// Make sure the shaders have been linked correctly
@@ -139,11 +114,13 @@ void initialise()
 	}
 	glUseProgram(program);
 
+	loadTextures();
 	GLuint texLoc = glGetUniformLocation(program, "heightSampler");
 	glUniform1i(texLoc, 0);
 
 	proj = glm::perspective(20.0f * CDR, 1.0f, 10.0f, 1000.0f);
-	view = lookAt(glm::vec3(0.0, 5.0, 12.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	view = lookAt(glm::vec3(256, 40.0, -100.0), glm::vec3(256.0, 0.0, 100.0), glm::vec3(0.0, 1.0, 0.0));
+	projView = proj * view;
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 
@@ -155,12 +132,12 @@ void initialise()
 	glGenVertexArrays(2, vboID);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vboID[0]);
-	glBufferData(GL_ARRAY_BUFFER, gridSize * gridSize * 3, verts, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	glEnableVertexAttribArray(0);  // Vertex position
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID[1]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (gridSize - 1) * (gridSize - 1) * 4, elems, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elems), elems, GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
 
@@ -178,7 +155,7 @@ void display()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(vaoID);
-	glDrawElements(GL_QUADS, (gridSize - 1) * (gridSize - 1) * 4, GL_UNSIGNED_SHORT, NULL);
+	glDrawElements(GL_PATCHES, gridSize * gridSize * 4, GL_UNSIGNED_SHORT, NULL);
 	glFlush();
 }
 
