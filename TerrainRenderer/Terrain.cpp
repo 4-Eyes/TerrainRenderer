@@ -5,8 +5,8 @@
 #include <GL/freeglut.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <cstdlib>
 #include "loadTGA.h"
+#include "Terrain.h"
 using namespace std;
 
 extern "C" {
@@ -15,11 +15,16 @@ extern "C" {
 
 GLuint matrixLoc;
 GLuint vaoID, heightTexID;
-glm::mat4 projView;
-const int gridSize = 512; // makes it a gridSize x gridSize grid
-float verts[gridSize * gridSize * 3];
-GLushort elems[gridSize * gridSize * 4];
+glm::mat4 proj, view, projView;
+
 float CDR = 3.14159265 / 180.0;
+glm::vec3 eye = glm::vec3(100, 0, 12.0);
+glm::vec4 light = glm::vec4(20.0, 100, 80, 1.0);
+glm::vec3 lookAt = glm::vec3(100, 80, 100.0);
+glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
+//glm::vec4 lightEye;
+GLuint lightLoc;
+GLuint mvMatrixLoc;
 
 GLuint loadShader(GLenum shaderType, string filename)
 {
@@ -58,7 +63,7 @@ void loadTextures()
 	// Load height map
 	glActiveTexture(GL_TEXTURE0);  //Texture unit 0
 	glBindTexture(GL_TEXTURE_2D, heightTexID);
-	loadTGA("Brick.tga");
+	loadTGA("HeightMap.tga");
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -66,23 +71,20 @@ void loadTextures()
 
 void generateGrid()
 {
-	float min = 0;
-	float max = 512;
-	float incr = (max - min) / gridSize;
-	for (int i = 0; i < gridSize; i++)
+	for (int i = 0; i < GRID_SIZE; i++)
 	{
-		for (int j = 0; j < gridSize; j++)
+		for (int j = 0; j < GRID_SIZE; j++)
 		{
-			int vertPos = (i * gridSize + j) * 3;
-			verts[vertPos] = min + incr * j;
-			verts[vertPos + 1] = 0;
-			verts[vertPos + 2] = min + incr + i;
-			if (i == gridSize - 1 || j == gridSize -1) continue;
-			int elemPos = (i * (gridSize -1) + j) * 4;
-			elems[elemPos] = i * gridSize + j;
-			elems[elemPos + 1] = (i + 1) * gridSize + j;
-			elems[elemPos + 2] = (i + 1) * gridSize + j + 1;
-			elems[elemPos + 3] = i * gridSize + j + 1;
+			int vertPos = (i * GRID_SIZE + j) * 3;
+			verts[vertPos] = GRID_MIN_X + CELL_WIDTH * i;
+			verts[vertPos + 1] = 0.0f;
+			verts[vertPos + 2] = GRID_MIN_Z + CELL_BREADTH * j;
+			if (i == GRID_SIZE - 1 || j == GRID_SIZE -1) continue;
+			int elemPos = (i * (GRID_SIZE -1) + j) * 4;
+			elems[elemPos] = i * GRID_SIZE + j;
+			elems[elemPos + 1] = (i + 1) * GRID_SIZE + j;
+			elems[elemPos + 2] = (i + 1) * GRID_SIZE + j + 1;
+			elems[elemPos + 3] = i * GRID_SIZE + j + 1;
 		}
 	}
 }
@@ -90,18 +92,19 @@ void generateGrid()
 void initialise()
 {
 	generateGrid();
-	glm::mat4 proj, view;
 	// set up shaders
 	GLuint vertexShader = loadShader(GL_VERTEX_SHADER, "Terrain.vert");
 	GLuint fragShader = loadShader(GL_FRAGMENT_SHADER, "Terrain.frag");
 	GLuint tessEvalShader = loadShader(GL_TESS_EVALUATION_SHADER, "TerrainTES.glsl");
 	GLuint tessContShader = loadShader(GL_TESS_CONTROL_SHADER, "TerrainTCS.glsl");
+	GLuint geometryShader = loadShader(GL_GEOMETRY_SHADER, "Terrain.geom");
 
 	GLuint program = glCreateProgram();
 	glAttachShader(program, vertexShader);
 	glAttachShader(program, fragShader);
 	glAttachShader(program, tessEvalShader);
 	glAttachShader(program, tessContShader);
+	glAttachShader(program, geometryShader);
 	glLinkProgram(program);
 
 	// Make sure the shaders have been linked correctly
@@ -118,13 +121,18 @@ void initialise()
 	}
 	glUseProgram(program);
 
+	proj = glm::perspective(20.0f, 1.0f, 10.0f, 1000.0f);
+	view = glm::lookAt(eye, lookAt, up);
+	projView = proj * view;
+//	lightEye = view * light;
+
+	matrixLoc = glGetUniformLocation(program, "mvpMatrix");
+//	mvMatrixLoc = glGetUniformLocation(program, "mvMatrix");
+	lightLoc = glGetUniformLocation(program, "lightPos");
+	glUniform4fv(lightLoc, 1, &light[0]);
 	loadTextures();
 	GLuint texLoc = glGetUniformLocation(program, "heightSampler");
 	glUniform1i(texLoc, 0);
-
-	proj = glm::perspective(20.0f * CDR, 1.0f, 10.0f, 1000.0f);
-	view = lookAt(glm::vec3(256, 40.0, -100.0), glm::vec3(256.0, 0.0, 100.0), glm::vec3(0.0, 1.0, 0.0));
-	projView = proj * view;
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 
@@ -147,25 +155,65 @@ void initialise()
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glutPostRedisplay();
 }
 
 void display()
 {
+	view = glm::lookAt(eye, lookAt, up);
+//	lightEye = view * light;
+	projView = proj * view;
 	glm::mat4 prodMatrix = projView;        //Model-view-proj matrix
 
+	glUniform4fv(lightLoc, 1, &light[0]);
+//	glUniformMatrix4fv(mvMatrixLoc, 1, GL_FALSE, &view[0][0]);
 	glUniformMatrix4fv(matrixLoc, 1, GL_FALSE, &prodMatrix[0][0]);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(vaoID);
-	glDrawElements(GL_PATCHES, gridSize * gridSize * 4, GL_UNSIGNED_SHORT, NULL);
+	glDrawElements(GL_PATCHES, GRID_SIZE * GRID_SIZE * 4, GL_UNSIGNED_SHORT, NULL);
 	glFlush();
 }
 
-void update(int value)
+void processSpecialKeys(int key, int xx, int yy)
 {
-	glutTimerFunc(50, update, 0);
+	switch (key)
+	{
+	case GLUT_KEY_LEFT:
+		eye += glm::vec3(1, 0, 0);
+		lookAt += glm::vec3(1, 0, 0);
+		break;
+	case GLUT_KEY_RIGHT:
+		eye += glm::vec3(-1, 0, 0);
+		lookAt += glm::vec3(-1, 0, 0);
+		break;
+	case GLUT_KEY_UP:
+		eye += glm::vec3(0, 1, 0);
+		lookAt += glm::vec3(0, 1, 0);
+		break;
+	case GLUT_KEY_DOWN:
+		eye += glm::vec3(0, -1, 0);
+		lookAt += glm::vec3(0, -1, 0);
+		break;
+	}
+	glutPostRedisplay();
+}
+
+void proceesKey(unsigned char key, int x, int y)
+{
+	switch(key)
+	{
+	case 'w':
+		eye += glm::vec3(0, 0, 1);
+		lookAt += glm::vec3(0, 0, 1);
+		break;
+	case 's':
+		eye += glm::vec3(0, 0, -1);
+		lookAt += glm::vec3(0, 0, -1);
+		break;
+	}
 	glutPostRedisplay();
 }
 
@@ -191,6 +239,7 @@ int main(int argc, char** argv)
 
 	initialise();
 	glutDisplayFunc(display);
-	glutTimerFunc(50, update, 0);
+	glutSpecialFunc(processSpecialKeys);
+	glutKeyboardFunc(proceesKey);
 	glutMainLoop();
 }

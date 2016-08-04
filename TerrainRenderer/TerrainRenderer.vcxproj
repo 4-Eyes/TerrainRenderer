@@ -144,6 +144,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Terrain.frag" />
+    <None Include="Terrain.geom" />
     <None Include="Terrain.vert" />
     <None Include="TerrainTCS.glsl" />
     <None Include="TerrainTES.glsl" />
@@ -154,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="loadTGA.h" />
+    <ClInclude Include="Terrain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Terrain.cpp" />
