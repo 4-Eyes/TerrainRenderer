@@ -32,14 +32,4 @@ void main()
 	gl_TessLevelOuter[3] = L;
 	gl_TessLevelInner[0] = L / 2;
 	gl_TessLevelInner[1] = L / 2;
-	
-	/*
-	gl_TessLevelOuter[0] = 4;
-	gl_TessLevelOuter[1] = 4;
-	gl_TessLevelOuter[2] = 4;
-	gl_TessLevelOuter[3] = 4;
-	gl_TessLevelInner[0] = 2;
-	gl_TessLevelInner[1] = 2;
-	*/
-	
 }
