@@ -1,4 +1,4 @@
-﻿#version 400
+#version 400
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
@@ -16,9 +16,9 @@ void main()
 	vec3 normal = normalize(cross(vertex2 - vertex1, vertex3 - vertex1));
 	for (int i = 0; i < gl_in.length(); i++)
 	{
-		vec3 lghtVec = normalize((mvpMatrix * lightPos).xyz - gl_in[i].gl_Position.xyz);
+		vec3 lghtVec = normalize(lightPos.xyz - gl_in[i].gl_Position.xyz);
 		diffTerm = max(dot(lghtVec, normal), 0.0f);
-		gl_Position = gl_in[i].gl_Position;
+		gl_Position = mvpMatrix * gl_in[i].gl_Position;
 		EmitVertex();
 	}
 }
