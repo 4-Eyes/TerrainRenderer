@@ -150,8 +150,11 @@
     <None Include="TerrainTES.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Brick.tga" />
+    <Image Include="grass.tga" />
     <Image Include="HeightMap.tga" />
+    <Image Include="rock.tga" />
+    <Image Include="snow.tga" />
+    <Image Include="water.tga" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="loadTGA.h" />
