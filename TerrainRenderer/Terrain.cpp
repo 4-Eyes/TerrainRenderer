@@ -14,7 +14,8 @@ extern "C" {
 }
 
 GLuint matrixLoc;
-GLuint vaoID, heightTexID;
+GLuint vaoID;
+GLuint textures[5];
 glm::mat4 proj, view, projView;
 
 float CDR = 3.14159265 / 180.0;
@@ -60,11 +61,39 @@ GLuint loadShader(GLenum shaderType, string filename)
 
 void loadTextures()
 {
-	glGenTextures(1, &heightTexID);   //Generate 1 texture ID
+	glGenTextures(5, textures);   //Generate 1 texture ID
 	// Load height map
 	glActiveTexture(GL_TEXTURE0);  //Texture unit 0
-	glBindTexture(GL_TEXTURE_2D, heightTexID);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	loadTGA("HeightMap.tga");
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// Load snow texture
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
+	loadTGA("snow.tga");
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// Load rock texture
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, textures[2]);
+	loadTGA("rock.tga");
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// Load grass texture
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, textures[3]);
+	loadTGA("grass.tga");
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// Load water texture
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, textures[4]);
+	loadTGA("water.tga");
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -132,9 +161,19 @@ void initialise()
 	lightLoc = glGetUniformLocation(program, "lightPos");
 	eyeLoc = glGetUniformLocation(program, "eyePos");
 	glUniform4fv(lightLoc, 1, &light[0]);
+
+	// Load textures
 	loadTextures();
 	GLuint texLoc = glGetUniformLocation(program, "heightSampler");
 	glUniform1i(texLoc, 0);
+	GLuint snowLoc = glGetUniformLocation(program, "snowSampler");
+	glUniform1i(snowLoc, 1);
+	GLuint rockLoc = glGetUniformLocation(program, "rockSampler");
+	glUniform1i(rockLoc, 2);
+	GLuint grassLoc = glGetUniformLocation(program, "grassSampler");
+	glUniform1i(grassLoc, 3);
+	GLuint waterLoc = glGetUniformLocation(program, "waterSampler");
+	glUniform1i(waterLoc, 4);
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 

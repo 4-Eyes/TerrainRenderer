@@ -14,6 +14,6 @@ void main() {
 	          + (1-u) *    v  * gl_in[3].gl_Position;
 
 	vec4 h = texture(heightSampler, vec2(posn.x/512.0,posn.z/512.0));
-	posn.y = (h.r + h.g + h.b) * 10.0;
+	posn.y = (h.r + h.g + h.b) * 15.0;
 	gl_Position = posn;
 }
