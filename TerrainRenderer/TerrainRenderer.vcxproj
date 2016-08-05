@@ -152,6 +152,8 @@
   <ItemGroup>
     <Image Include="grass.tga" />
     <Image Include="HeightMap.tga" />
+    <Image Include="heightmap2.tga" />
+    <Image Include="heightmap3.tga" />
     <Image Include="rock.tga" />
     <Image Include="snow.tga" />
     <Image Include="water.tga" />

@@ -11,7 +11,7 @@ out vec2 texCoords;
 
 void main()
 {
-	float height = 32.0;
+	float height = 30.0;
 	float pointHeight;
 	vec3 vertex1 = gl_in[0].gl_Position.xyz;
 	vec3 vertex2 = gl_in[1].gl_Position.xyz;
@@ -24,13 +24,13 @@ void main()
 		diffTerm = max(dot(lghtVec, normal), 0.0f);
 		// Work out texture weightings
 		pointHeight = gl_in[i].gl_Position.y;
-		if (pointHeight < height / 4.0) {
+		if (pointHeight < height / 18.0) {
 			weights[0] = 0;
 			weights[1] = 0;
 			weights[2] = 0;
 			weights[3] = 1;
 		}
-		else if (pointHeight >= height /4.0 && pointHeight < height/2.0) {
+		else if (pointHeight >= height /18.0 && pointHeight < height/2.0) {
 			weights[0] = 0;
 			weights[1] = 0;
 			weights[2] = 1;

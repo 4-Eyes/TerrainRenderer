@@ -28,6 +28,8 @@
     <Image Include="rock.tga" />
     <Image Include="snow.tga" />
     <Image Include="water.tga" />
+    <Image Include="heightmap2.tga" />
+    <Image Include="heightmap3.tga" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="loadTGA.h">
