@@ -18,13 +18,14 @@ GLuint vaoID, heightTexID;
 glm::mat4 proj, view, projView;
 
 float CDR = 3.14159265 / 180.0;
-glm::vec3 eye = glm::vec3(100, 0, 12.0);
-glm::vec4 light = glm::vec4(20.0, 100, 80, 1.0);
-glm::vec3 lookAt = glm::vec3(100, 80, 100.0);
+glm::vec3 eye = glm::vec3(100, 80, 12.0);
+glm::vec4 light = glm::vec4(20.0, 80, 80, 1.0);
+glm::vec3 lookAt = glm::vec3(100, 0, 100.0);
 glm::vec3 up = glm::vec3(0.0, 1.0, 0.0);
-//glm::vec4 lightEye;
 GLuint lightLoc;
 GLuint mvMatrixLoc;
+GLuint eyeLoc;
+bool isMesh = false;
 
 GLuint loadShader(GLenum shaderType, string filename)
 {
@@ -82,12 +83,13 @@ void generateGrid()
 			if (i == GRID_SIZE - 1 || j == GRID_SIZE -1) continue;
 			int elemPos = (i * (GRID_SIZE -1) + j) * 4;
 			elems[elemPos] = i * GRID_SIZE + j;
-			elems[elemPos + 1] = (i + 1) * GRID_SIZE + j;
+			elems[elemPos + 3] = (i + 1) * GRID_SIZE + j;
 			elems[elemPos + 2] = (i + 1) * GRID_SIZE + j + 1;
-			elems[elemPos + 3] = i * GRID_SIZE + j + 1;
+			elems[elemPos + 1] = i * GRID_SIZE + j + 1;
 		}
 	}
 }
+
 
 void initialise()
 {
@@ -124,11 +126,11 @@ void initialise()
 	proj = glm::perspective(20.0f, 1.0f, 10.0f, 1000.0f);
 	view = glm::lookAt(eye, lookAt, up);
 	projView = proj * view;
-//	lightEye = view * light;
 
 	matrixLoc = glGetUniformLocation(program, "mvpMatrix");
-//	mvMatrixLoc = glGetUniformLocation(program, "mvMatrix");
+	mvMatrixLoc = glGetUniformLocation(program, "mvMatrix");
 	lightLoc = glGetUniformLocation(program, "lightPos");
+	eyeLoc = glGetUniformLocation(program, "eyePos");
 	glUniform4fv(lightLoc, 1, &light[0]);
 	loadTextures();
 	GLuint texLoc = glGetUniformLocation(program, "heightSampler");
@@ -155,7 +157,7 @@ void initialise()
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, isMesh ? GL_LINE : GL_FILL);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glutPostRedisplay();
 }
@@ -163,12 +165,12 @@ void initialise()
 void display()
 {
 	view = glm::lookAt(eye, lookAt, up);
-//	lightEye = view * light;
 	projView = proj * view;
 	glm::mat4 prodMatrix = projView;        //Model-view-proj matrix
 
 	glUniform4fv(lightLoc, 1, &light[0]);
-//	glUniformMatrix4fv(mvMatrixLoc, 1, GL_FALSE, &view[0][0]);
+	glUniform3fv(eyeLoc, 1, &eye[0]);
+	glUniformMatrix4fv(mvMatrixLoc, 1, GL_FALSE, &view[0][0]);
 	glUniformMatrix4fv(matrixLoc, 1, GL_FALSE, &prodMatrix[0][0]);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -213,6 +215,10 @@ void proceesKey(unsigned char key, int x, int y)
 		eye += glm::vec3(0, 0, -1);
 		lookAt += glm::vec3(0, 0, -1);
 		break;
+	case 'r' :
+		isMesh = !isMesh;
+		glPolygonMode(GL_FRONT_AND_BACK, isMesh ? GL_LINE : GL_FILL);
+		break;
 	}
 	glutPostRedisplay();
 }
@@ -221,7 +227,7 @@ int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(1280, 720);
 	glutCreateWindow("Terrain");
 	glutInitContextVersion(4, 2);
 	glutInitContextProfile(GLUT_CORE_PROFILE);
