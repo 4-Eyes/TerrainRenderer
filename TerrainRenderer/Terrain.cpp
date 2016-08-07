@@ -30,15 +30,20 @@ bool isMesh = false;
 
 GLuint loadShader(GLenum shaderType, string filename)
 {
-	ifstream foo(filename.c_str());
+	ifstream file(filename.c_str());
 	string data = "";
-	while (!foo.eof())
+	while (!file.eof())
 	{
 		string tmp;
-		getline(foo, tmp);
+		getline(file, tmp);
 		data += tmp + "\r\n";
 	}
-	foo.close();
+	file.close();
+
+//	if (filename == "Terrain.geom")
+//	{
+//		data = data.substr(3, data.length() - 3);
+//	}
 	const char * shaderTxt = data.c_str();
 
 	GLuint shader = glCreateShader(shaderType);
