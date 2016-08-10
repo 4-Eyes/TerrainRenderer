@@ -70,7 +70,7 @@ void loadTextures()
 	// Load height map
 	glActiveTexture(GL_TEXTURE0);  //Texture unit 0
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
-	loadTGA("heightmap3.tga");
+	loadTGA("heightmap2.tga");
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

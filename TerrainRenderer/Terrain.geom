@@ -24,13 +24,13 @@ void main()
 		diffTerm = max(dot(lghtVec, normal), 0.0f);
 		// Work out texture weightings
 		pointHeight = gl_in[i].gl_Position.y;
-		if (pointHeight < height / 18.0) {
+		if (pointHeight < height / 6.0) {
 			weights[0] = 0;
 			weights[1] = 0;
 			weights[2] = 0;
 			weights[3] = 1;
 		}
-		else if (pointHeight >= height /18.0 && pointHeight < height/4.0) {
+		else if (pointHeight >= height / 6.0 && pointHeight < height/4.0) {
 			weights[0] = 0;
 			weights[1] = 0;
 			weights[2] = 1;

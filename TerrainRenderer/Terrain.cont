@@ -10,7 +10,7 @@ void main()
 	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 	
 	float d;
-	float high = 6;
+	float high = 3;
 	float low = 1;
 	float dmin = 0;
 	float dmax = 200;
@@ -24,29 +24,30 @@ void main()
 	if (x < 1 && z < 1) {
 		float incr = 2.0 / 200.0;
 		vec4 th1 = texture(heightSampler, vec2(x + incr, z + incr));
-		float h1 = (th1.r + th1.g + th1.b) * 10.0;
+		float h1 = (th1.r + th1.g + th1.b) * 15.0;
 		float grad = abs((h1 - h) / (sqrt(incr * incr + incr * incr)));
 		if (grad < 1) {
-			multiplier = 0.9;
-		}
-		else if (grad > 1 && grad < 2) {
 			multiplier = 1.0;
 		}
-		else if (grad > 2 && grad < 5) {
-			multiplier = 1.2;
-		}
-		else if (grad > 5 && grad < 8) {
+		else if (grad > 1 && grad < 2) {
 			multiplier = 1.5;
 		}
-		else if (grad > 8) {
+		else if (grad > 2 && grad < 5) {
 			multiplier = 2.0;
+		}
+		else if (grad > 5 && grad < 8) {
+			multiplier = 2.5;
+		}
+		else if (grad > 8) {
+			multiplier = 3.0;
 		}
 	}
 
 	d = abs(distance(posn, eyePos));
 
-	highp int L = int(((d - dmin)/(dmax - dmin)) * (low - high) + high);
+	float L = ((d - dmin)/(dmax - dmin)) * (low - high) + high;
 	highp int mL = int(L * multiplier);
+	//int mLinner = mL / 2;
 	
 	if (mL < 1) {
 		gl_TessLevelOuter[0] = low;
