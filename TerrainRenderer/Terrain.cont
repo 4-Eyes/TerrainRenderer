@@ -1,0 +1,67 @@
+#version 400
+
+layout(vertices = 4) out;
+
+uniform vec3 eyePos;
+uniform sampler2D heightSampler;
+
+void main()
+{
+	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+	
+	float d;
+	float high = 6;
+	float low = 1;
+	float dmin = 0;
+	float dmax = 200;
+	float x = gl_in[gl_InvocationID].gl_Position.x / 200.0;
+	float z = gl_in[gl_InvocationID].gl_Position.z / 200.0;
+	vec4 textureHeight = texture(heightSampler, vec2(x, z));
+	float h = (textureHeight.r + textureHeight.g + textureHeight.b) * 10.0;
+	vec3 posn = vec3(gl_in[gl_InvocationID].gl_Position.x, h, gl_in[gl_InvocationID].gl_Position.z);
+
+	float multiplier = 1.0;
+	if (x < 1 && z < 1) {
+		float incr = 2.0 / 200.0;
+		vec4 th1 = texture(heightSampler, vec2(x + incr, z + incr));
+		float h1 = (th1.r + th1.g + th1.b) * 10.0;
+		float grad = abs((h1 - h) / (sqrt(incr * incr + incr * incr)));
+		if (grad < 1) {
+			multiplier = 0.9;
+		}
+		else if (grad > 1 && grad < 2) {
+			multiplier = 1.0;
+		}
+		else if (grad > 2 && grad < 5) {
+			multiplier = 1.2;
+		}
+		else if (grad > 5 && grad < 8) {
+			multiplier = 1.5;
+		}
+		else if (grad > 8) {
+			multiplier = 2.0;
+		}
+	}
+
+	d = abs(distance(posn, eyePos));
+
+	highp int L = int(((d - dmin)/(dmax - dmin)) * (low - high) + high);
+	highp int mL = int(L * multiplier);
+	
+	if (mL < 1) {
+		gl_TessLevelOuter[0] = low;
+		gl_TessLevelOuter[1] = low;
+		gl_TessLevelOuter[2] = low;
+		gl_TessLevelOuter[3] = low;
+		gl_TessLevelInner[0] = low;
+		gl_TessLevelInner[1] = low;
+	}
+	else {
+		gl_TessLevelOuter[0] = mL;
+		gl_TessLevelOuter[1] = mL;
+		gl_TessLevelOuter[2] = mL;
+		gl_TessLevelOuter[3] = mL;
+		gl_TessLevelInner[0] = mL;
+		gl_TessLevelInner[1] = mL;
+	}
+}

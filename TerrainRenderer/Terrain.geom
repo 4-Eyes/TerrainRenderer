@@ -30,19 +30,19 @@ void main()
 			weights[2] = 0;
 			weights[3] = 1;
 		}
-		else if (pointHeight >= height /18.0 && pointHeight < height/2.0) {
+		else if (pointHeight >= height /18.0 && pointHeight < height/4.0) {
 			weights[0] = 0;
 			weights[1] = 0;
 			weights[2] = 1;
 			weights[3] = 0;
 		}
-		else if (pointHeight >= height/2.0 && pointHeight < height * 9.0 / 16.0) {
+		else if (pointHeight >= height/4.0 && pointHeight < height * 5.0 / 16.0) {
 			weights[0] = 0;
-			weights[1] = (-16.0 / height) * pointHeight + 9.0;
-			weights[2] = (16.0 / height) * pointHeight -8;
+			weights[1] = (-16.0 / height) * pointHeight + 5.0;
+			weights[2] = (16.0 / height) * pointHeight -4;
 			weights[3] = 0;
 		}
-		else if (pointHeight >= height * 9.0 / 16.0 && pointHeight < height * 3.0 / 4.0) {
+		else if (pointHeight >= height * 5.0 / 16.0 && pointHeight < height * 3.0 / 4.0) {
 			weights[0] = 0;
 			weights[1] = 1;
 			weights[2] = 0;
@@ -59,7 +59,7 @@ void main()
 			weights[2] = 0;
 			weights[3] = 0;		}
 		// Work out texture coordinates;
-		texCoords = vec2(i % 2, i * 0.5);
+		texCoords = vec2(i * 0.5, i % 2);
 
 		gl_Position = mvpMatrix * gl_in[i].gl_Position;
 		EmitVertex();

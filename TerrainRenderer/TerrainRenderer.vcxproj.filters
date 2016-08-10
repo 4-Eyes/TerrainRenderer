@@ -17,10 +17,10 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Terrain.vert" />
-    <None Include="TerrainTCS.glsl" />
-    <None Include="TerrainTES.glsl" />
     <None Include="Terrain.frag" />
     <None Include="Terrain.geom" />
+    <None Include="Terrain.cont" />
+    <None Include="Terrain.eval" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="HeightMap.tga" />

@@ -131,8 +131,8 @@ void initialise()
 	// set up shaders
 	GLuint vertexShader = loadShader(GL_VERTEX_SHADER, "Terrain.vert");
 	GLuint fragShader = loadShader(GL_FRAGMENT_SHADER, "Terrain.frag");
-	GLuint tessEvalShader = loadShader(GL_TESS_EVALUATION_SHADER, "TerrainTES.glsl");
-	GLuint tessContShader = loadShader(GL_TESS_CONTROL_SHADER, "TerrainTCS.glsl");
+	GLuint tessEvalShader = loadShader(GL_TESS_EVALUATION_SHADER, "Terrain.eval");
+	GLuint tessContShader = loadShader(GL_TESS_CONTROL_SHADER, "Terrain.cont");
 	GLuint geometryShader = loadShader(GL_GEOMETRY_SHADER, "Terrain.geom");
 
 	GLuint program = glCreateProgram();

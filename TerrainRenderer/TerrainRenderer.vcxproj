@@ -146,8 +146,8 @@
     <None Include="Terrain.frag" />
     <None Include="Terrain.geom" />
     <None Include="Terrain.vert" />
-    <None Include="TerrainTCS.glsl" />
-    <None Include="TerrainTES.glsl" />
+    <None Include="Terrain.cont" />
+    <None Include="Terrain.eval" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="grass.tga" />
