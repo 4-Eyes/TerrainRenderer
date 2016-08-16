@@ -9,7 +9,8 @@
 #include "Terrain.h"
 using namespace std;
 
-extern "C" {
+extern "C"
+{
 	_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
 }
 
@@ -40,11 +41,11 @@ GLuint loadShader(GLenum shaderType, string filename)
 	}
 	file.close();
 
-	if (filename == "Terrain.geom")
-	{
-		data = data.substr(3, data.length() - 3);
-	}
-	const char * shaderTxt = data.c_str();
+	//	if (filename == "Terrain.geom")
+	//	{
+	//		data = data.substr(3, data.length() - 3);
+	//	}
+	const char* shaderTxt = data.c_str();
 
 	GLuint shader = glCreateShader(shaderType);
 	glShaderSource(shader, 1, &shaderTxt, NULL);
@@ -55,9 +56,9 @@ GLuint loadShader(GLenum shaderType, string filename)
 	{
 		GLint infoLogLength;
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
-		GLchar *strInfoLog = new GLchar[infoLogLength + 1];
+		GLchar* strInfoLog = new GLchar[infoLogLength + 1];
 		glGetShaderInfoLog(shader, infoLogLength, NULL, strInfoLog);
-		const char *strShaderType = NULL;
+		const char* strShaderType = NULL;
 		cerr << "Compile failure in shader: " << strInfoLog << endl;
 		delete[] strInfoLog;
 	}
@@ -66,9 +67,9 @@ GLuint loadShader(GLenum shaderType, string filename)
 
 void loadTextures()
 {
-	glGenTextures(5, textures);   //Generate 1 texture ID
+	glGenTextures(5, textures); //Generate 1 texture ID
 	// Load height map
-	glActiveTexture(GL_TEXTURE0);  //Texture unit 0
+	glActiveTexture(GL_TEXTURE0); //Texture unit 0
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	loadTGA("heightmap2.tga");
 
@@ -114,8 +115,8 @@ void generateGrid()
 			verts[vertPos] = GRID_MIN_X + CELL_SIZE * i;
 			verts[vertPos + 1] = 0.0f;
 			verts[vertPos + 2] = GRID_MIN_Z + CELL_SIZE * j;
-			if (i == GRID_SIZE - 1 || j == GRID_SIZE -1) continue;
-			int elemPos = (i * (GRID_SIZE -1) + j) * 4;
+			if (i == GRID_SIZE - 1 || j == GRID_SIZE - 1) continue;
+			int elemPos = (i * (GRID_SIZE - 1) + j) * 4;
 			elems[elemPos] = i * GRID_SIZE + j;
 			elems[elemPos + 3] = (i + 1) * GRID_SIZE + j;
 			elems[elemPos + 2] = (i + 1) * GRID_SIZE + j + 1;
@@ -150,7 +151,7 @@ void initialise()
 	{
 		GLint infoLogLength;
 		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLogLength);
-		GLchar *strInfoLog = new GLchar[infoLogLength + 1];
+		GLchar* strInfoLog = new GLchar[infoLogLength + 1];
 		glGetProgramInfoLog(program, infoLogLength, NULL, strInfoLog);
 		fprintf(stderr, "Linker failure: %s\n", strInfoLog);
 		delete[] strInfoLog;
@@ -256,7 +257,7 @@ void initialise()
 	glBindBuffer(GL_ARRAY_BUFFER, vboID[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-	glEnableVertexAttribArray(0);  // Vertex position
+	glEnableVertexAttribArray(0); // Vertex position
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboID[1]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elems), elems, GL_STATIC_DRAW);
@@ -274,7 +275,7 @@ void display()
 {
 	view = glm::lookAt(eye, lookAt, up);
 	projView = proj * view;
-	glm::mat4 prodMatrix = projView;        //Model-view-proj matrix
+	glm::mat4 prodMatrix = projView; //Model-view-proj matrix
 
 	glUniform4fv(lightLoc, 1, &light[0]);
 	glUniform3fv(eyeLoc, 1, &eye[0]);
@@ -313,7 +314,7 @@ void processSpecialKeys(int key, int xx, int yy)
 
 void proceesKey(unsigned char key, int x, int y)
 {
-	switch(key)
+	switch (key)
 	{
 	case 'w':
 		eye += glm::vec3(0, 0, 1);
@@ -323,7 +324,7 @@ void proceesKey(unsigned char key, int x, int y)
 		eye += glm::vec3(0, 0, -1);
 		lookAt += glm::vec3(0, 0, -1);
 		break;
-	case 'r' :
+	case 'r':
 		isMesh = !isMesh;
 		glPolygonMode(GL_FRONT_AND_BACK, isMesh ? GL_LINE : GL_FILL);
 		break;

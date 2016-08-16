@@ -36,7 +36,7 @@ void main()
 	if (x < 1 && z < 1 && enableGradientTesselationMultiplier == 1) {
 		float incr = 1.0 / gridSize;
 		vec4 th1 = texture(heightSampler, vec2(x + incr, z + incr));
-		float h1 = (th1.r + th1.g + th1.b) * 15.0;
+		float h1 = (th1.r + th1.g + th1.b) * terrainHeight;
 		float grad = abs((h1 - h) / (sqrt(incr * incr + incr * incr)));
 		if (grad >= tessGradLevel1 && grad < tessGradLevel2) {
 			multiplier = tessMulLevel1;

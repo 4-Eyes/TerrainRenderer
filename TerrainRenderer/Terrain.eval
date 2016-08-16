@@ -24,7 +24,7 @@ void main() {
 	if (z <= 0.0) {
 		z = 0.01;
 	}
-	vec4 h = texture(heightSampler, vec2(x, z));
+	vec4 h = texture(heightSampler, vec2(1 - x, z));
 	posn.y = (h.r + h.g + h.b) * terrainHeight;
 	gl_Position = posn;
 }

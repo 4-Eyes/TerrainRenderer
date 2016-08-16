@@ -30,6 +30,7 @@
     <Image Include="water.tga" />
     <Image Include="heightmap2.tga" />
     <Image Include="heightmap3.tga" />
+    <Image Include="australia.tga" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="loadTGA.h">

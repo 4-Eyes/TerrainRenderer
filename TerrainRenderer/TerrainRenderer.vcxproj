@@ -150,6 +150,7 @@
     <None Include="Terrain.eval" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="australia.tga" />
     <Image Include="grass.tga" />
     <Image Include="HeightMap.tga" />
     <Image Include="heightmap2.tga" />
