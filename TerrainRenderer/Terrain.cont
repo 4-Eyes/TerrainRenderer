@@ -4,58 +4,67 @@ layout(vertices = 4) out;
 
 uniform vec3 eyePos;
 uniform sampler2D heightSampler;
+uniform float highTessLevel;
+uniform float lowTessLevel;
+uniform float tessDistanceMax;
+uniform float tessDistanceMin;
+uniform int gridSize;
+uniform float cellSize;
+uniform float terrainHeight;
+uniform int enableGradientTesselationMultiplier;
+uniform float tessMulLevel1;
+uniform float tessMulLevel2;
+uniform float tessMulLevel3;
+uniform float tessMulLevel4;
+uniform float tessGradLevel1;
+uniform float tessGradLevel2;
+uniform float tessGradLevel3;
+uniform float tessGradLevel4;
 
 void main()
 {
 	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 	
 	float d;
-	float high = 3;
-	float low = 1;
-	float dmin = 0;
-	float dmax = 200;
-	float x = gl_in[gl_InvocationID].gl_Position.x / 200.0;
-	float z = gl_in[gl_InvocationID].gl_Position.z / 200.0;
+	float x = gl_in[gl_InvocationID].gl_Position.x / (cellSize * gridSize);
+	float z = gl_in[gl_InvocationID].gl_Position.z / (cellSize * gridSize);
 	vec4 textureHeight = texture(heightSampler, vec2(x, z));
-	float h = (textureHeight.r + textureHeight.g + textureHeight.b) * 15.0;
+	float h = (textureHeight.r + textureHeight.g + textureHeight.b) * terrainHeight;
 	vec3 posn = vec3(gl_in[gl_InvocationID].gl_Position.x, h, gl_in[gl_InvocationID].gl_Position.z);
 
 	float multiplier = 1.0;
-	if (x < 1 && z < 1) {
-		float incr = 2.0 / 200.0;
+	if (x < 1 && z < 1 && enableGradientTesselationMultiplier == 1) {
+		float incr = 1.0 / gridSize;
 		vec4 th1 = texture(heightSampler, vec2(x + incr, z + incr));
 		float h1 = (th1.r + th1.g + th1.b) * 15.0;
 		float grad = abs((h1 - h) / (sqrt(incr * incr + incr * incr)));
-		if (grad < 1) {
-			multiplier = 1.0;
+		if (grad >= tessGradLevel1 && grad < tessGradLevel2) {
+			multiplier = tessMulLevel1;
 		}
-		else if (grad > 1 && grad < 2) {
-			multiplier = 1.5;
+		else if (grad >= tessGradLevel2 && grad < tessGradLevel3) {
+			multiplier = tessMulLevel2;
 		}
-		else if (grad > 2 && grad < 5) {
-			multiplier = 2.0;
+		else if (grad >= tessGradLevel3 && grad < tessGradLevel4) {
+			multiplier = tessMulLevel3;
 		}
-		else if (grad > 5 && grad < 8) {
-			multiplier = 2.5;
-		}
-		else if (grad > 8) {
-			multiplier = 3.0;
+		else {
+			multiplier = tessMulLevel4;
 		}
 	}
 
 	d = abs(distance(posn, eyePos));
 
-	float L = ((d - dmin)/(dmax - dmin)) * (low - high) + high;
+	float L = ((d - tessDistanceMin)/(tessDistanceMax - tessDistanceMin)) * (lowTessLevel - highTessLevel) + highTessLevel;
 	highp int mL = int(L * multiplier);
 	//int mLinner = mL / 2;
 	
 	if (mL < 1) {
-		gl_TessLevelOuter[0] = low;
-		gl_TessLevelOuter[1] = low;
-		gl_TessLevelOuter[2] = low;
-		gl_TessLevelOuter[3] = low;
-		gl_TessLevelInner[0] = low;
-		gl_TessLevelInner[1] = low;
+		gl_TessLevelOuter[0] = lowTessLevel;
+		gl_TessLevelOuter[1] = lowTessLevel;
+		gl_TessLevelOuter[2] = lowTessLevel;
+		gl_TessLevelOuter[3] = lowTessLevel;
+		gl_TessLevelInner[0] = lowTessLevel;
+		gl_TessLevelInner[1] = lowTessLevel;
 	}
 	else {
 		gl_TessLevelOuter[0] = mL;

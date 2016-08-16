@@ -40,10 +40,10 @@ GLuint loadShader(GLenum shaderType, string filename)
 	}
 	file.close();
 
-	if (filename == "Terrain.geom")
-	{
-		data = data.substr(3, data.length() - 3);
-	}
+//	if (filename == "Terrain.geom")
+//	{
+//		data = data.substr(3, data.length() - 3);
+//	}
 	const char * shaderTxt = data.c_str();
 
 	GLuint shader = glCreateShader(shaderType);
@@ -111,9 +111,9 @@ void generateGrid()
 		for (int j = 0; j < GRID_SIZE; j++)
 		{
 			int vertPos = (i * GRID_SIZE + j) * 3;
-			verts[vertPos] = GRID_MIN_X + CELL_WIDTH * i;
+			verts[vertPos] = GRID_MIN_X + CELL_SIZE * i;
 			verts[vertPos + 1] = 0.0f;
-			verts[vertPos + 2] = GRID_MIN_Z + CELL_BREADTH * j;
+			verts[vertPos + 2] = GRID_MIN_Z + CELL_SIZE * j;
 			if (i == GRID_SIZE - 1 || j == GRID_SIZE -1) continue;
 			int elemPos = (i * (GRID_SIZE -1) + j) * 4;
 			elems[elemPos] = i * GRID_SIZE + j;
@@ -179,6 +179,70 @@ void initialise()
 	glUniform1i(grassLoc, 3);
 	GLuint waterLoc = glGetUniformLocation(program, "waterSampler");
 	glUniform1i(waterLoc, 4);
+
+	// Pass in variables
+	GLuint gridLoc = glGetUniformLocation(program, "gridSize");
+	glUniform1i(gridLoc, GRID_SIZE);
+
+	GLuint cellSizeLoc = glGetUniformLocation(program, "cellSize");
+	glUniform1f(cellSizeLoc, CELL_SIZE);
+
+	GLuint terrainHeightLoc = glGetUniformLocation(program, "terrainHeight");
+	glUniform1f(terrainHeightLoc, TERRAIN_HEIGHT);
+
+	GLuint waterFractionLoc = glGetUniformLocation(program, "waterFraction");
+	glUniform1f(waterFractionLoc, WATER_FRACTION);
+
+	GLuint grassFractionLoc = glGetUniformLocation(program, "grassFraction");
+	glUniform1f(grassFractionLoc, GRASS_FRACTION);
+
+	GLuint grassRockBlendFractionLoc = glGetUniformLocation(program, "grassRockBlendFraction");
+	glUniform1f(grassRockBlendFractionLoc, GRASS_ROCK_BLEND_FRACTION);
+
+	GLuint rockFractionLoc = glGetUniformLocation(program, "rockFraction");
+	glUniform1f(rockFractionLoc, ROCK_FRACTION);
+
+	GLuint rockSnowBlendFractionLoc = glGetUniformLocation(program, "rockSnowBlendFraction");
+	glUniform1f(rockSnowBlendFractionLoc, ROCK_SNOW_BLEND_FRACTION);
+
+	GLuint highTessLevelLoc = glGetUniformLocation(program, "highTessLevel");
+	glUniform1f(highTessLevelLoc, HIGH_TESS_LEVEL);
+
+	GLuint lowTessLevelLoc = glGetUniformLocation(program, "lowTessLevel");
+	glUniform1f(lowTessLevelLoc, LOW_TESS_LEVEL);
+
+	GLuint tessDisanceMaxLoc = glGetUniformLocation(program, "tessDistanceMax");
+	glUniform1f(tessDisanceMaxLoc, TESS_DISTANCE_MAX);
+
+	GLuint tessDisanceMinLoc = glGetUniformLocation(program, "tessDistanceMin");
+	glUniform1f(tessDisanceMinLoc, TESS_DISTANCE_MIN);
+
+	GLuint tessMulLevel1Loc = glGetUniformLocation(program, "tessMulLevel1");
+	glUniform1f(tessMulLevel1Loc, TESS_MUL_LEVEL_1);
+
+	GLuint tessMulLevel2Loc = glGetUniformLocation(program, "tessMulLevel2");
+	glUniform1f(tessMulLevel2Loc, TESS_MUL_LEVEL_2);
+
+	GLuint tessMulLevel3Loc = glGetUniformLocation(program, "tessMulLevel3");
+	glUniform1f(tessMulLevel3Loc, TESS_MUL_LEVEL_3);
+
+	GLuint tessMulLevel4Loc = glGetUniformLocation(program, "tessMulLevel4");
+	glUniform1f(tessMulLevel4Loc, TESS_MUL_LEVEL_4);
+
+	GLuint tessGradLevel1Loc = glGetUniformLocation(program, "tessGradLevel1");
+	glUniform1f(tessGradLevel1Loc, TESS_GRAD_LEVEL_1);
+
+	GLuint tessGradLevel2Loc = glGetUniformLocation(program, "tessGradLevel2");
+	glUniform1f(tessGradLevel2Loc, TESS_GRAD_LEVEL_2);
+
+	GLuint tessGradLevel3Loc = glGetUniformLocation(program, "tessGradLevel3");
+	glUniform1f(tessGradLevel3Loc, TESS_GRAD_LEVEL_3);
+
+	GLuint tessGradLevel4Loc = glGetUniformLocation(program, "tessGradLevel4");
+	glUniform1f(tessGradLevel4Loc, TESS_GRAD_LEVEL_4);
+
+	GLuint enableGradientTesselationMultiplierLoc = glGetUniformLocation(program, "enableGradientTesselationMultiplier");
+	glUniform1i(enableGradientTesselationMultiplierLoc, ENABLE_GRADIENT_TESSELATION_MULTIPLIER);
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 
