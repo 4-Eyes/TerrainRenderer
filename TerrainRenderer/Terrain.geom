@@ -11,7 +11,6 @@ uniform float grassRockBlendFraction;
 uniform float rockFraction;
 uniform float rockSnowBlendFraction;
 
-uniform float cellSize;
 uniform float terrainHeight;
 
 out float diffTerm;
@@ -20,7 +19,7 @@ out vec2 texCoords;
 
 void main()
 {
-	float height = cellSize * terrainHeight;
+	float height = 2.0 * terrainHeight;
 	float pointHeight;
 	vec3 vertex1 = gl_in[0].gl_Position.xyz;
 	vec3 vertex2 = gl_in[1].gl_Position.xyz;

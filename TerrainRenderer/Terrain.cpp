@@ -40,10 +40,10 @@ GLuint loadShader(GLenum shaderType, string filename)
 	}
 	file.close();
 
-//	if (filename == "Terrain.geom")
-//	{
-//		data = data.substr(3, data.length() - 3);
-//	}
+	if (filename == "Terrain.geom")
+	{
+		data = data.substr(3, data.length() - 3);
+	}
 	const char * shaderTxt = data.c_str();
 
 	GLuint shader = glCreateShader(shaderType);
